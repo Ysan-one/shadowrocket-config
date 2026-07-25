@@ -1,0 +1,43 @@
+name: Update ChatGPT Voice IPs
+
+on:
+  schedule:
+    - cron: "23 18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-chatgpt-voice
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Refresh the official OpenAI voice IP list
+        run: python scripts/update_chatgpt_voice.py
+
+      - name: Validate Shadowrocket files
+        run: python scripts/validate_shadowrocket.py
+
+      - name: Commit an updated list
+        run: |
+          if git diff --quiet -- rules/ChatGPT-Voice.list; then
+            echo "OpenAI's list is unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rules/ChatGPT-Voice.list
+          git commit -m "Update ChatGPT Voice IPs"
+          git push

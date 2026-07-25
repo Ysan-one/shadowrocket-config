@@ -4,18 +4,34 @@
 
 ## 配置地址
 
+### 稳定版
+
+稳定版保留原来的大型静态规则，已经在现有设备上验证可用：
+
 ```text
 https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Shadowrocket.conf
 ```
 
-## 在设备中安装
+### V2 测试版（推荐先在一台 iPhone 上使用）
 
-1. 复制上面的配置地址。
+V2 使用分层结构和持续维护的远程规则，补齐 ChatGPT Voice、TikTok、Telegram、Notion、1Password 等容易被旧名单漏掉的流量，同时继续让 Apple TV、iCloud、App Store、哔哩哔哩、夸克和其他中国大陆服务直连：
+
+```text
+https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Shadowrocket-v2.conf
+```
+
+V2 不会覆盖稳定版，两份配置可以同时保存在 Shadowrocket 中。建议先在一台 iPhone 上试用两到三天，再让 iPad 和 Apple Vision Pro 切换。
+
+## 在设备中安装 V2
+
+1. 复制上面的 V2 配置地址。
 2. 打开 Shadowrocket，进入“配置”。
 3. 点击右上角“+”，粘贴地址并下载。
-4. 点击下载后的 `Shadowrocket.conf`，选择“使用配置”。
+4. 点击下载后的 `Shadowrocket-v2.conf`，选择“使用配置”。
 5. 在 Shadowrocket 的“设置 → 自动更新 → 配置”中开启自动后台更新。
 6. 在苹果系统“设置 → 通用 → 后台 App 刷新”中允许 Shadowrocket 后台刷新。
+
+V2 中的 ChatGPT Voice IP 来自 OpenAI 官方 `chatgpt-voice.json`。GitHub Actions 每天检查一次；只有官方 IP 发生变化时才会更新 `rules/ChatGPT-Voice.list`。语音优先使用 UDP 3478，代理节点需要支持 UDP 才能获得更好的通话质量。
 
 ## 使用原则
 
@@ -30,6 +46,8 @@ https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Shadowrocket
 - 国内 App 开屏广告和常见广告 SDK 使用 AdvertisingLite 远程规则在本机 `REJECT`，不启用 MITM、不安装解密证书。
 - 未匹配的站点最终使用 `DIRECT`。
 - 百度、哔哩哔哩、高德、淘宝、微信、京东、国内视频、夸克等常用国内服务设置了显式 `DIRECT` 保护。
+
+V2 还将本地 DNS 换成阿里和腾讯的加密 DoH，并补充局域网 IPv6 绕过；它只保留一份 AdvertisingLite 广告规则，不再重复加载旧配置中的 16,000 余条静态广告名单。通用中国大陆规则放在通用海外代理规则之前，最终仍然使用 `FINAL,DIRECT` 控制代理流量成本。
 
 Apple AI 远程规则由 `xpdigital/Apple-Rule` 维护。配置在远程列表前加入了 Apple TV、App Store、系统更新和 iCloud 大流量域名的直连保护，避免第三方列表把这些内容错误地送入代理。
 
