@@ -21,11 +21,14 @@ https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Shadowrocket
 
 - 广告和跟踪域名继续使用 `REJECT`。
 - GFW 黑名单中的站点使用 `PROXY`。
-- Apple Intelligence、Siri 和 iCloud Private Relay 使用远程 `RULE-SET` 并走 `PROXY`；使用相关功能时请在 Shadowrocket 首页选择美国节点。
+- Apple Intelligence 和 Siri 的官方核心域名走 `PROXY`，并使用远程 `RULE-SET` 补充更新；使用相关功能时请在 Shadowrocket 首页选择美国节点。
+- Apple TV、App Store、苹果系统更新以及 iCloud 照片和文件内容使用 `DIRECT`，避免大流量下载消耗代理额度。
 - 未匹配的站点最终使用 `DIRECT`。
 - 百度、哔哩哔哩、高德、淘宝、微信、京东、国内视频、夸克等常用国内服务设置了显式 `DIRECT` 保护。
 
-Apple AI 远程规则由 `xpdigital/Apple-Rule` 维护。该列表目前还包括 `apps.mzstatic.com` 与 `ls.apple.com`，因此部分 App Store 资源和苹果位置服务也可能使用代理流量。
+Apple AI 远程规则由 `xpdigital/Apple-Rule` 维护。配置在远程列表前加入了 Apple TV、App Store、系统更新和 iCloud 大流量域名的直连保护，避免第三方列表把这些内容错误地送入代理。
+
+这里的 Apple TV 直连指苹果自有系统和内容服务。Apple TV 上的 YouTube、Netflix 等第三方应用仍会按照各自域名的规则决定直连或代理。
 
 ## 安全说明
 
