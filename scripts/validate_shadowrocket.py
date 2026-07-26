@@ -75,6 +75,8 @@ def validate_config() -> None:
         seen[key] = (number, fields[2])
 
     required = {
+        ("DOMAIN", "raw.githubusercontent.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "githubusercontent.com"): "PROXY",
         ("DOMAIN-SUFFIX", "openai.com"): "PROXY",
         ("DOMAIN-SUFFIX", "claude.ai"): "PROXY",
         ("DOMAIN-SUFFIX", "google.com"): "PROXY",
@@ -101,6 +103,8 @@ def validate_config() -> None:
         fail("V2 update-url is missing")
 
     ordered_markers = [
+        "DOMAIN,raw.githubusercontent.com,PROXY,force-remote-dns",
+        "DOMAIN-SUFFIX,githubusercontent.com,PROXY,force-remote-dns",
         "DOMAIN,gspe1-ssl.ls.apple.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,maps.apple.com,DIRECT",
         "DOMAIN-SUFFIX,facetime.apple.com,DIRECT",
@@ -116,6 +120,16 @@ def validate_config() -> None:
         fail("broad ls.apple.com direct rule can bypass Apple AI region checks")
     if "DEST-PORT,3478,DIRECT" in config_text:
         fail("port-wide UDP 3478 direct rule can bypass ChatGPT Voice proxying")
+
+    first_remote_resource = min(
+        config_text.index("RULE-SET,https://raw.githubusercontent.com/"),
+        config_text.index("DOMAIN-SET,https://raw.githubusercontent.com/"),
+    )
+    github_proxy_rule = config_text.index(
+        "DOMAIN,raw.githubusercontent.com,PROXY,force-remote-dns"
+    )
+    if github_proxy_rule > first_remote_resource:
+        fail("GitHub Raw proxy rule must precede all remote rule resources")
 
 
 def validate_voice_rules() -> None:

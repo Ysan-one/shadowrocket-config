@@ -38,6 +38,7 @@ V2 中的 ChatGPT Voice IP 来自 OpenAI 官方 `chatgpt-voice.json`。GitHub Ac
 - 广告和跟踪域名继续使用 `REJECT`。
 - GFW 黑名单中的站点使用 `PROXY`。
 - ChatGPT/OpenAI 的登录、接口、静态资源、WebSocket、iOS 设备校验和 Google 登录链路统一使用 `PROXY` 与远程 DNS，避免规则模式下混用大陆直连 IP 和代理 IP。
+- GitHub 云端配置和远程规则使用的 `raw.githubusercontent.com`、`*.githubusercontent.com` 精确走 `PROXY`，避免大陆直连 GitHub Raw 时更新偶发失败；普通 GitHub 网站不会因此全部消耗代理流量。
 - iOS 系统认证网页会话不再旁路 Shadowrocket；`auth.openai.com`、`setup.auth.openai.com`、`auth0.openai.com` 以及当前 Cloudflare 别名均有最优先代理兜底。
 - Claude/Anthropic 的登录、推理、文件、功能开关、连接器与 WebSocket 使用父域名级 `PROXY` 保护，并启用远程 DNS；新增的 Anthropic 子域名也会自动匹配。
 - Gemini、Google 登录及常用图片、视频和资源域名统一使用 `PROXY` 与远程 DNS。
