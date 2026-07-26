@@ -78,6 +78,13 @@ def validate_config() -> None:
         ("DOMAIN-SUFFIX", "openai.com"): "PROXY",
         ("DOMAIN-SUFFIX", "claude.ai"): "PROXY",
         ("DOMAIN-SUFFIX", "google.com"): "PROXY",
+        ("DOMAIN", "guzzoni.apple.com"): "PROXY",
+        ("DOMAIN", "gspe1-ssl.ls.apple.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "maps.apple.com"): "DIRECT",
+        ("DOMAIN", "gsp-ssl.ls.apple.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "facetime.apple.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "facetime.net"): "DIRECT",
+        ("DOMAIN-SUFFIX", "push.apple.com"): "DIRECT",
         ("DOMAIN-SUFFIX", "tv.apple.com"): "DIRECT",
         ("DOMAIN-SUFFIX", "icloud-content.com"): "DIRECT",
         ("DOMAIN-SUFFIX", "bilibili.com"): "DIRECT",
@@ -92,6 +99,23 @@ def validate_config() -> None:
         fail("ChatGPT Voice rule set is not routed through PROXY")
     if "main/Shadowrocket-v2.conf" not in config_text:
         fail("V2 update-url is missing")
+
+    ordered_markers = [
+        "DOMAIN,gspe1-ssl.ls.apple.com,PROXY,force-remote-dns",
+        "DOMAIN-SUFFIX,maps.apple.com,DIRECT",
+        "DOMAIN-SUFFIX,facetime.apple.com,DIRECT",
+        "DOMAIN-SUFFIX,gateway.icloud.com,DIRECT",
+        "RULE-SET,https://raw.githubusercontent.com/xpdigital/Apple-Rule/refs/heads/main/Apple-AI.list,PROXY",
+        "DOMAIN-SUFFIX,apple.com,DIRECT",
+    ]
+    positions = [config_text.index(marker) for marker in ordered_markers]
+    if positions != sorted(positions):
+        fail("Apple AI proxy and Apple direct rules are in an unsafe order")
+
+    if "DOMAIN-SUFFIX,ls.apple.com,DIRECT" in config_text:
+        fail("broad ls.apple.com direct rule can bypass Apple AI region checks")
+    if "DEST-PORT,3478,DIRECT" in config_text:
+        fail("port-wide UDP 3478 direct rule can bypass ChatGPT Voice proxying")
 
 
 def validate_voice_rules() -> None:
