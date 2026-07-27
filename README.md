@@ -46,6 +46,7 @@ V2 中的 ChatGPT Voice IP 来自 OpenAI 官方 `chatgpt-voice.json`。GitHub Ac
 - Apple 地图的已确认主机使用 `DIRECT`，但不会把整个 `ls.apple.com` 放行，避免未来未知的 Siri AI 主机从大陆出口连接。
 - FaceTime、iMessage、Apple 推送和 Apple 的 `17.0.0.0/8` 网络使用 `DIRECT`。配置没有使用 UDP 3478 端口级直连，因为 ChatGPT Voice 也会使用这个端口。
 - Apple TV、App Store、苹果系统更新以及 iCloud 照片和文件内容使用 `DIRECT`，避免大流量下载消耗代理额度。
+- 神州租车、雪球、主要中国大陆银行、银联和互联网银行的核心域名放在广告规则之前显式 `DIRECT`；雪球另有专用远程列表补充相关证券和基金域名。
 - 国内 App 开屏广告和常见广告 SDK 使用 AdvertisingLite 远程规则在本机 `REJECT`，不启用 MITM、不安装解密证书。
 - 未匹配的站点最终使用 `DIRECT`。
 - 百度、哔哩哔哩、高德、淘宝、微信、京东、国内视频、夸克等常用国内服务设置了显式 `DIRECT` 保护。
@@ -61,6 +62,17 @@ Apple AI 远程规则由 `xpdigital/Apple-Rule` 维护。配置不会盲目采�
 分流配置只能控制网络出口，不能改变或隐藏 Apple ID / Google 账号地区、付款资料、手机号码、App Store 商店区、系统定位权限或服务商自己的风控记录。对于有地区限制的服务，完整代理规则只能降低因域名漏配而混用大陆直连 IP 的风险，不能保证账号不会被限制。
 
 广告规则不会专门处理 YouTube 视频广告，也不包含 YouTube、Googlevideo 或 YTImg 等正常播放域名。命中广告规则的请求会在设备本地拒绝，不会消耗代理流量。个别 App 如果因误拦出现登录、支付或页面加载异常，应为对应域名增加直连白名单。
+
+## 检测到代理的国内 App
+
+`DIRECT` 只能让网络请求使用本地出口，不能隐藏 iOS 顶部的 VPN 状态或小火箭创建的隧道。神州租车和部分银行 App 如果直接检测 VPN 是否开启，即使其全部域名均为 `DIRECT`，仍可能显示“检测到手机打开了代理”。
+
+可以使用苹果“快捷指令”中的“设置 VPN”操作自动处理：
+
+1. 新建个人自动化，触发条件选择“App”，勾选神州租车和需要使用的银行 App，选择“已打开”。
+2. 添加“设置 VPN”操作，选择断开 Shadowrocket，并设为立即运行。
+3. 再创建一条相同 App 的“已关闭”自动化，添加“设置 VPN”并重新连接 Shadowrocket。
+4. 如果系统的“设置 VPN”中没有显示 Shadowrocket，可使用 Shadowrocket 的 `shadowrocket://disconnect` 和 `shadowrocket://connect` URL 方案作为备选。
 
 ## 安全说明
 

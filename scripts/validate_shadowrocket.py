@@ -89,6 +89,11 @@ def validate_config() -> None:
         ("DOMAIN-SUFFIX", "push.apple.com"): "DIRECT",
         ("DOMAIN-SUFFIX", "tv.apple.com"): "DIRECT",
         ("DOMAIN-SUFFIX", "icloud-content.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "zuche.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "xueqiu.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "imedao.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "icbc.com.cn"): "DIRECT",
+        ("DOMAIN-SUFFIX", "unionpay.com"): "DIRECT",
         ("DOMAIN-SUFFIX", "bilibili.com"): "DIRECT",
         ("DOMAIN-SUFFIX", "quark.cn"): "DIRECT",
     }
@@ -111,6 +116,10 @@ def validate_config() -> None:
         "DOMAIN-SUFFIX,gateway.icloud.com,DIRECT",
         "RULE-SET,https://raw.githubusercontent.com/xpdigital/Apple-Rule/refs/heads/main/Apple-AI.list,PROXY",
         "DOMAIN-SUFFIX,apple.com,DIRECT",
+        "DOMAIN-SUFFIX,zuche.com,DIRECT",
+        "DOMAIN-SUFFIX,xueqiu.com,DIRECT",
+        "DOMAIN-SUFFIX,icbc.com.cn,DIRECT",
+        "RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/AdvertisingLite/AdvertisingLite.list,REJECT",
     ]
     positions = [config_text.index(marker) for marker in ordered_markers]
     if positions != sorted(positions):
