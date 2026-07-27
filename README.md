@@ -42,7 +42,7 @@ V2 中的 ChatGPT Voice IP 来自 OpenAI 官方 `chatgpt-voice.json`。GitHub Ac
 - iOS 系统认证网页会话不再旁路 Shadowrocket；`auth.openai.com`、`setup.auth.openai.com`、`auth0.openai.com` 以及当前 Cloudflare 别名均有最优先代理兜底。
 - Claude/Anthropic 的登录、推理、文件、功能开关、连接器与 WebSocket 使用父域名级 `PROXY` 保护，并启用远程 DNS；新增的 Anthropic 子域名也会自动匹配。
 - Gemini、Google 登录及常用图片、视频和资源域名统一使用 `PROXY` 与远程 DNS。
-- Apple Intelligence 和 Siri 的官方核心域名走 `PROXY`，地区判断主机 `gspe1-ssl.ls.apple.com` 也精确走代理；使用相关功能时请在 Shadowrocket 首页选择稳定的美国节点。
+- Apple Intelligence 和 Siri 的官方核心域名走 `PROXY`，地区判断主机 `gspe1-ssl.ls.apple.com` 也精确走代理；`mask.icloud.com`、`mask-h2.icloud.com`、`mask-api.icloud.com` 三个 iCloud Private Relay 主机按用户选择固定走代理。使用相关功能时请在 Shadowrocket 首页选择稳定的美国节点。
 - Apple 地图的已确认主机使用 `DIRECT`，但不会把整个 `ls.apple.com` 放行，避免未来未知的 Siri AI 主机从大陆出口连接。
 - FaceTime、iMessage、Apple 推送和 Apple 的 `17.0.0.0/8` 网络使用 `DIRECT`。配置没有使用 UDP 3478 端口级直连，因为 ChatGPT Voice 也会使用这个端口。
 - Apple TV、App Store、苹果系统更新以及 iCloud 照片和文件内容使用 `DIRECT`，避免大流量下载消耗代理额度。
@@ -53,7 +53,7 @@ V2 中的 ChatGPT Voice IP 来自 OpenAI 官方 `chatgpt-voice.json`。GitHub Ac
 
 V2 还将本地 DNS 换成阿里和腾讯的加密 DoH，并补充局域网 IPv6 绕过；它只保留一份 AdvertisingLite 广告规则，不再重复加载旧配置中的 16,000 余条静态广告名单。通用中国大陆规则放在通用海外代理规则之前，最终仍然使用 `FINAL,DIRECT` 控制代理流量成本。
 
-Apple AI 远程规则由 `xpdigital/Apple-Rule` 维护。配置不会盲目采用其中的宽泛分类：官方核心 AI 域名和 `gspe1-ssl.ls.apple.com` 优先代理；已确认的 Apple 地图主机以及 Apple TV、FaceTime、iMessage、App Store、系统更新和 iCloud 大流量域名则在远程列表前优先直连。未识别的 `*.ls.apple.com` 仍保守走代理，以兼顾新版 Siri AI。
+Apple AI 远程规则由 `xpdigital/Apple-Rule` 维护。配置不会盲目采用其中的宽泛分类：官方核心 AI 域名、三个指定的 iCloud Private Relay 主机和 `gspe1-ssl.ls.apple.com` 优先代理；已确认的 Apple 地图主机以及 Apple TV、FaceTime、iMessage、App Store、系统更新和 iCloud 大流量域名则在远程列表前优先直连。未识别的 `*.ls.apple.com` 仍保守走代理，以兼顾新版 Siri AI。
 
 这里的 Apple TV 直连指苹果自有系统和内容服务。Apple TV 上的 YouTube、Netflix 等第三方应用仍会按照各自域名的规则决定直连或代理。
 
