@@ -48,7 +48,7 @@ V2 中的 ChatGPT Voice IP 来自 OpenAI 官方 `chatgpt-voice.json`。GitHub Ac
 - FaceTime、iMessage、Apple 推送和 Apple 的 `17.0.0.0/8` 网络使用 `DIRECT`。配置没有使用 UDP 3478 端口级直连，因为 ChatGPT Voice 也会使用这个端口。
 - Apple TV、App Store、苹果系统更新以及 iCloud 照片和文件内容使用 `DIRECT`，避免大流量下载消耗代理额度。
 - 神州租车、雪球、主要中国大陆银行、银联和互联网银行的核心域名放在广告规则之前显式 `DIRECT`；雪球另有专用远程列表补充相关证券和基金域名。
-- 国内 App 开屏广告和常见广告 SDK 使用 AdvertisingLite 远程规则在本机 `REJECT`，不启用 MITM、不安装解密证书。
+- 国内 App 开屏广告和常见广告 SDK 使用 AdvertisingLite 远程规则在本机 `REJECT`，并为闲鱼、淘宝固定补充优酷广告、淘宝广告统计和活动弹层域名；不启用 MITM、不安装解密证书。
 - 未匹配的站点最终使用 `DIRECT`。
 - 百度、哔哩哔哩、高德、淘宝、微信、京东、国内视频、夸克等常用国内服务设置了显式 `DIRECT` 保护。
 
@@ -63,6 +63,8 @@ Apple AI 远程规则由 `xpdigital/Apple-Rule` 维护。配置不会盲目采�
 分流配置只能控制网络出口，不能改变或隐藏 Apple ID / Google 账号地区、付款资料、手机号码、App Store 商店区、系统定位权限或服务商自己的风控记录。对于有地区限制的服务，完整代理规则只能降低因域名漏配而混用大陆直连 IP 的风险，不能保证账号不会被限制。
 
 广告规则不会专门处理 YouTube 视频广告，也不包含 YouTube、Googlevideo 或 YTImg 等正常播放域名。命中广告规则的请求会在设备本地拒绝，不会消耗代理流量。个别 App 如果因误拦出现登录、支付或页面加载异常，应为对应域名增加直连白名单。
+
+闲鱼和淘宝的纯域名广告规则不会封锁 `acs.m.goofish.com`、`acs.m.taobao.com` 等主业务接口，因此不会为了去广告牺牲商品、聊天、登录和下单功能。代价是通过这些第一方接口下发或已经缓存到设备里的开屏广告无法保证完全去除；这是“不安装解密证书”模式的能力边界。
 
 ## 检测到代理的国内 App
 
