@@ -82,11 +82,19 @@ def validate_config() -> None:
         ("DOMAIN-SUFFIX", "openai.com"): "PROXY",
         ("DOMAIN-SUFFIX", "claude.ai"): "PROXY",
         ("DOMAIN-SUFFIX", "google.com"): "PROXY",
-        ("DOMAIN-SUFFIX", "riotgames.com"): "PROXY",
-        ("DOMAIN-SUFFIX", "riotcdn.net"): "PROXY",
+        ("DOMAIN-SUFFIX", "riotcdn.net"): "DIRECT",
         ("DOMAIN-SUFFIX", "pvp.net"): "PROXY",
-        ("DOMAIN-SUFFIX", "rgpub.io"): "PROXY",
-        ("DOMAIN-SUFFIX", "rstatic.net"): "PROXY",
+        ("DOMAIN-SUFFIX", "rgpub.io"): "DIRECT",
+        ("DOMAIN-SUFFIX", "rstatic.net"): "DIRECT",
+        ("DOMAIN-SUFFIX", "leagueoflegends.com"): "DIRECT",
+        ("DOMAIN", "l3cdn.riotgames.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "patcher.riotgames.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "lolm.qq.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "gamedl.qq.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "gcloudcs.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "auth.riotgames.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "api.riotgames.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "pp.riotgames.com"): "PROXY",
         ("DOMAIN", "guzzoni.apple.com"): "PROXY",
         ("DOMAIN-SUFFIX", "smoot.apple.com"): "PROXY",
         ("DOMAIN-SUFFIX", "apple-relay.apple.com"): "PROXY",
@@ -125,7 +133,10 @@ def validate_config() -> None:
     ordered_markers = [
         "DOMAIN,raw.githubusercontent.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,githubusercontent.com,PROXY,force-remote-dns",
-        "DOMAIN-SUFFIX,riotgames.com,PROXY,force-remote-dns",
+        "DOMAIN-SUFFIX,riotcdn.net,DIRECT",
+        "DOMAIN-SUFFIX,leagueoflegends.com,DIRECT",
+        "DOMAIN-SUFFIX,lolm.qq.com,DIRECT",
+        "DOMAIN-SUFFIX,auth.riotgames.com,PROXY,force-remote-dns",
         "DOMAIN,mask.icloud.com,PROXY,force-remote-dns",
         "DOMAIN,mask-h2.icloud.com,PROXY,force-remote-dns",
         "DOMAIN,mask-api.icloud.com,PROXY,force-remote-dns",
@@ -147,6 +158,8 @@ def validate_config() -> None:
 
     if "DOMAIN-SUFFIX,ls.apple.com,DIRECT" in config_text:
         fail("broad ls.apple.com direct rule can bypass Apple AI region checks")
+    if "DOMAIN-SUFFIX,riotgames.com,PROXY" in config_text:
+        fail("broad riotgames.com proxy rule can send mainland game downloads through the proxy")
     if "xpdigital/Apple-Rule" in config_text:
         fail("removed xpdigital Apple AI repository must not remain referenced")
     if "DEST-PORT,3478,DIRECT" in config_text:
@@ -166,6 +179,10 @@ def validate_config() -> None:
 def validate_legacy_config() -> None:
     text = LEGACY_CONFIG.read_text(encoding="utf-8")
     ordered_markers = [
+        "DOMAIN-SUFFIX,riotcdn.net,DIRECT",
+        "DOMAIN-SUFFIX,leagueoflegends.com,DIRECT",
+        "DOMAIN-SUFFIX,lolm.qq.com,DIRECT",
+        "DOMAIN-SUFFIX,auth.riotgames.com,PROXY,force-remote-dns",
         "DOMAIN,mask.icloud.com,PROXY,force-remote-dns",
         "DOMAIN,gspe1-ssl.ls.apple.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,maps.apple.com,DIRECT",
