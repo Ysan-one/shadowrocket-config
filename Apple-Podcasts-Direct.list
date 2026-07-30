@@ -1,0 +1,48 @@
+# NAME: Apple Podcasts Direct
+# UPDATED: 2026-07-30
+# PURPOSE: Keep Apple Podcasts catalog, sync, feeds and common episode hosting traffic off the proxy.
+#
+# Apple Podcasts can load RSS feeds and episode audio from publisher-controlled hosts.
+# This list covers Apple-owned endpoints and common podcast hosting platforms; unknown
+# publisher-specific hosts still fall back to the main configuration rules.
+
+# Apple Podcasts catalog, API and playback progress sync.
+DOMAIN-SUFFIX,podcasts.apple.com
+DOMAIN-SUFFIX,pcast.apple.com
+DOMAIN,bookkeeper.itunes.apple.com
+
+# Apple Podcasts app identifiers used when Shadowrocket can observe the User-Agent.
+USER-AGENT,Podcasts*
+USER-AGENT,*Podcasts*
+USER-AGENT,com.apple.podcasts*
+
+# Common podcast hosting, feed, redirect and episode delivery platforms.
+DOMAIN-SUFFIX,acast.com
+DOMAIN-SUFFIX,acastcdn.com
+DOMAIN-SUFFIX,art19.com
+DOMAIN-SUFFIX,audioboom.com
+DOMAIN-SUFFIX,blubrry.com
+DOMAIN-SUFFIX,buzzsprout.com
+DOMAIN-SUFFIX,captivate.fm
+DOMAIN-SUFFIX,castos.com
+DOMAIN-SUFFIX,chtbl.com
+DOMAIN-SUFFIX,fireside.fm
+DOMAIN-SUFFIX,libsyn.com
+DOMAIN-SUFFIX,libsynpro.com
+DOMAIN-SUFFIX,megaphone.fm
+DOMAIN-SUFFIX,megaphone.link
+DOMAIN-SUFFIX,omnycontent.com
+DOMAIN-SUFFIX,pinecast.com
+DOMAIN-SUFFIX,podbean.com
+DOMAIN-SUFFIX,podbean.fm
+DOMAIN-SUFFIX,podbean.net
+DOMAIN-SUFFIX,podigee.io
+DOMAIN-SUFFIX,podserve.fm
+DOMAIN-SUFFIX,podtrac.com
+DOMAIN-SUFFIX,prx.org
+DOMAIN-SUFFIX,redcircle.com
+DOMAIN-SUFFIX,rss.com
+DOMAIN-SUFFIX,simplecast.com
+DOMAIN-SUFFIX,simplecastcdn.com
+DOMAIN-SUFFIX,spreaker.com
+DOMAIN-SUFFIX,transistor.fm
