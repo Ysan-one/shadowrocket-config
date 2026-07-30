@@ -14,7 +14,7 @@ https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Shadowrocket
 
 ### V2 测试版（推荐先在一台 iPhone 上使用）
 
-V2 使用分层结构和持续维护的远程规则，补齐 ChatGPT Voice、TikTok、Telegram、Notion、1Password 等容易被旧名单漏掉的流量，同时继续让 Apple 地图、FaceTime、iMessage、Apple TV、iCloud、App Store、哔哩哔哩、夸克和其他中国大陆服务直连：
+V2 使用分层结构和持续维护的远程规则，补齐 ChatGPT Voice、TikTok、Telegram、Notion、1Password 等容易被旧名单漏掉的流量，同时继续让 Apple 地图、FaceTime、iMessage、Apple TV、Apple 播客、iCloud、App Store、哔哩哔哩、夸克和其他中国大陆服务直连：
 
 ```text
 https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Shadowrocket-v2.conf
@@ -47,6 +47,7 @@ V2 中的 ChatGPT Voice IP 来自 OpenAI 官方 `chatgpt-voice.json`。GitHub Ac
 - Apple 地图的已确认主机使用 `DIRECT`，但不会把整个 `ls.apple.com` 放行，避免未来未知的 Siri AI 主机从大陆出口连接。
 - FaceTime、iMessage、Apple 推送和 Apple 的 `17.0.0.0/8` 网络使用 `DIRECT`。配置没有使用 UDP 3478 端口级直连，因为 ChatGPT Voice 也会使用这个端口。
 - Apple TV、App Store、苹果系统更新以及 iCloud 照片和文件内容使用 `DIRECT`，避免大流量下载消耗代理额度。
+- Apple 播客的苹果目录、封面、进度同步、苹果 CDN 和常见第三方节目托管平台使用 `DIRECT`；播客广告规则仍然优先于平台直连规则。
 - 神州租车、雪球、主要中国大陆银行、银联和互联网银行的核心域名放在广告规则之前显式 `DIRECT`；雪球另有专用远程列表补充相关证券和基金域名。
 - 国内 App 开屏广告和常见广告 SDK 使用 AdvertisingLite 远程规则在本机 `REJECT`，并为闲鱼、淘宝固定补充优酷广告、淘宝广告统计和活动弹层域名；不启用 MITM、不安装解密证书。
 - 未匹配的站点最终使用 `DIRECT`。
@@ -54,9 +55,11 @@ V2 中的 ChatGPT Voice IP 来自 OpenAI 官方 `chatgpt-voice.json`。GitHub Ac
 
 V2 还将本地 DNS 换成阿里和腾讯的加密 DoH，并补充局域网 IPv6 绕过；它只保留一份 AdvertisingLite 广告规则，不再重复加载旧配置中的 16,000 余条静态广告名单。通用中国大陆规则放在通用海外代理规则之前，最终仍然使用 `FINAL,DIRECT` 控制代理流量成本。
 
-Apple AI 远程规则由 `xpdigital/Apple-Rule` 维护。配置不会盲目采用其中的宽泛分类：官方核心 AI 域名、三个指定的 iCloud Private Relay 主机和 `gspe1-ssl.ls.apple.com` 优先代理；已确认的 Apple 地图主机以及 Apple TV、FaceTime、iMessage、App Store、系统更新和 iCloud 大流量域名则在远程列表前优先直连。未识别的 `*.ls.apple.com` 仍保守走代理，以兼顾新版 Siri AI。
+原先引用的 `xpdigital/Apple-Rule` 仓库已无法访问。它最后公开的 Apple AI 精简规则所包含的 `guzzoni.apple.com`、`*.smoot.apple.com`、三个 Apple Relay 主机、`cp4.cloudflare.com` 和 `gspe1-ssl.ls.apple.com` 已全部固化在本配置中，因此移除了会返回 404 的远程依赖。三个指定的 iCloud Private Relay 主机继续代理；已确认的 Apple 地图主机以及 Apple TV、FaceTime、iMessage、Apple 播客、App Store、系统更新和 iCloud 大流量域名继续优先直连。未识别的 `*.ls.apple.com` 仍保守走代理，以兼顾新版 Siri AI。
 
 这里的 Apple TV 直连指苹果自有系统和内容服务。Apple TV 上的 YouTube、Netflix 等第三方应用仍会按照各自域名的规则决定直连或代理。
+
+Apple 播客与 Apple TV 不同：公开播客的 RSS 和音频文件可以由节目发行方放在任意服务器。本仓库的 `Apple-Podcasts-Direct.list` 覆盖苹果服务和常见播客托管平台；若某个特定节目使用自己的独立音频域名，它仍可能按照通用规则连接，需要结合 Shadowrocket 请求记录补充该节目实际使用的域名。
 
 如果 ChatGPT 在“全局路由 → 配置”下提示 `unsupported_country_region_territory`，请先更新并重新使用本配置，再完全退出 ChatGPT 后重新打开，并继续选择“使用 Google 登录”。若弹窗仍显示旧错误，请在 iOS 的 Safari 网站数据中删除 `openai` 和 `chatgpt` 记录后重试。若同一节点在全局代理下可用、配置模式不可用，请在 Shadowrocket 请求记录中确认 `auth.openai.com` 命中 `PROXY`，而不是 `DIRECT`。
 

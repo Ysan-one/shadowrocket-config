@@ -9,7 +9,9 @@ import sys
 
 
 CONFIG = Path("Shadowrocket-v2.conf")
+LEGACY_CONFIG = Path("Shadowrocket.conf")
 VOICE_RULES = Path("rules/ChatGPT-Voice.list")
+PODCAST_RULES = Path("Apple-Podcasts-Direct.list")
 RULE_TYPES = {
     "DOMAIN",
     "DOMAIN-KEYWORD",
@@ -86,6 +88,11 @@ def validate_config() -> None:
         ("DOMAIN-SUFFIX", "rgpub.io"): "PROXY",
         ("DOMAIN-SUFFIX", "rstatic.net"): "PROXY",
         ("DOMAIN", "guzzoni.apple.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "smoot.apple.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "apple-relay.apple.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "apple-relay.cloudflare.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "apple-relay.fastly-edge.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "cp4.cloudflare.com"): "PROXY",
         ("DOMAIN", "mask.icloud.com"): "PROXY",
         ("DOMAIN", "mask-h2.icloud.com"): "PROXY",
         ("DOMAIN", "mask-api.icloud.com"): "PROXY",
@@ -126,12 +133,13 @@ def validate_config() -> None:
         "DOMAIN-SUFFIX,maps.apple.com,DIRECT",
         "DOMAIN-SUFFIX,facetime.apple.com,DIRECT",
         "DOMAIN-SUFFIX,gateway.icloud.com,DIRECT",
-        "RULE-SET,https://raw.githubusercontent.com/xpdigital/Apple-Rule/refs/heads/main/Apple-AI.list,PROXY",
+        "DOMAIN-SUFFIX,ls.apple.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,apple.com,DIRECT",
         "DOMAIN-SUFFIX,zuche.com,DIRECT",
         "DOMAIN-SUFFIX,xueqiu.com,DIRECT",
         "DOMAIN-SUFFIX,icbc.com.cn,DIRECT",
         "RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/AdvertisingLite/AdvertisingLite.list,REJECT",
+        "RULE-SET,https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Apple-Podcasts-Direct.list,DIRECT",
     ]
     positions = [config_text.index(marker) for marker in ordered_markers]
     if positions != sorted(positions):
@@ -139,6 +147,8 @@ def validate_config() -> None:
 
     if "DOMAIN-SUFFIX,ls.apple.com,DIRECT" in config_text:
         fail("broad ls.apple.com direct rule can bypass Apple AI region checks")
+    if "xpdigital/Apple-Rule" in config_text:
+        fail("removed xpdigital Apple AI repository must not remain referenced")
     if "DEST-PORT,3478,DIRECT" in config_text:
         fail("port-wide UDP 3478 direct rule can bypass ChatGPT Voice proxying")
 
@@ -151,6 +161,28 @@ def validate_config() -> None:
     )
     if github_proxy_rule > first_remote_resource:
         fail("GitHub Raw proxy rule must precede all remote rule resources")
+
+
+def validate_legacy_config() -> None:
+    text = LEGACY_CONFIG.read_text(encoding="utf-8")
+    ordered_markers = [
+        "DOMAIN,mask.icloud.com,PROXY,force-remote-dns",
+        "DOMAIN,gspe1-ssl.ls.apple.com,PROXY,force-remote-dns",
+        "DOMAIN-SUFFIX,maps.apple.com,DIRECT",
+        "DOMAIN-SUFFIX,gateway.icloud.com,DIRECT",
+        "DOMAIN-SUFFIX,ls.apple.com,PROXY,force-remote-dns",
+        "DOMAIN-SUFFIX,apple.com,DIRECT",
+        "RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/AdvertisingLite/AdvertisingLite.list,REJECT",
+        "RULE-SET,https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Apple-Podcasts-Direct.list,DIRECT",
+    ]
+    try:
+        positions = [text.index(marker) for marker in ordered_markers]
+    except ValueError as error:
+        fail(f"{LEGACY_CONFIG}: missing protected Apple route: {error}")
+    if positions != sorted(positions):
+        fail(f"{LEGACY_CONFIG}: Apple AI, Maps and Podcasts rules are in an unsafe order")
+    if "xpdigital/Apple-Rule" in text:
+        fail(f"{LEGACY_CONFIG}: removed xpdigital repository must not remain referenced")
 
 
 def validate_voice_rules() -> None:
@@ -170,9 +202,42 @@ def validate_voice_rules() -> None:
         fail("ChatGPT Voice list contains duplicates")
 
 
+def validate_podcast_rules() -> None:
+    allowed_types = {"DOMAIN", "DOMAIN-SUFFIX", "USER-AGENT"}
+    seen: set[tuple[str, str]] = set()
+    for number, line in active_lines(PODCAST_RULES):
+        fields = [field.strip() for field in line.split(",")]
+        if len(fields) != 2 or fields[0] not in allowed_types:
+            fail(f"{PODCAST_RULES}:{number}: invalid podcast rule")
+        key = (fields[0], fields[1].lower())
+        if key in seen:
+            fail(f"{PODCAST_RULES}:{number}: duplicate podcast matcher")
+        seen.add(key)
+
+    required = {
+        ("DOMAIN-SUFFIX", "podcasts.apple.com"),
+        ("DOMAIN-SUFFIX", "acast.com"),
+        ("DOMAIN-SUFFIX", "buzzsprout.com"),
+        ("DOMAIN-SUFFIX", "libsyn.com"),
+        ("DOMAIN-SUFFIX", "podbean.com"),
+        ("DOMAIN-SUFFIX", "spreaker.com"),
+        ("USER-AGENT", "*podcasts*"),
+    }
+    missing = sorted(required - seen)
+    if missing:
+        fail(f"missing required Apple Podcasts routes: {missing}")
+
+    forbidden = {"amazonaws.com", "cloudfront.net", "spotifycdn.com"}
+    for rule_type, value in seen:
+        if rule_type == "DOMAIN-SUFFIX" and value in forbidden:
+            fail(f"podcast list contains overly broad shared CDN: {value}")
+
+
 def main() -> None:
     validate_config()
+    validate_legacy_config()
     validate_voice_rules()
+    validate_podcast_rules()
     print("Shadowrocket V2 validation passed")
 
 
