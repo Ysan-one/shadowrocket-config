@@ -14,7 +14,7 @@ https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Shadowrocket
 
 ### V2 测试版（推荐先在一台 iPhone 上使用）
 
-V2 使用分层结构和持续维护的远程规则，补齐 ChatGPT Voice、TikTok、Telegram、Notion、1Password 等容易被旧名单漏掉的流量，同时继续让 Apple 地图、FaceTime、iMessage、Apple TV、Apple 播客、iCloud、App Store、哔哩哔哩、夸克和其他中国大陆服务直连：
+V2 使用分层结构和持续维护的远程规则，补齐 ChatGPT Voice、TikTok、Telegram、Notion、1Password 等容易被旧名单漏掉的流量，同时继续让 Apple 地图、FaceTime、iMessage、Apple Music、Apple TV、Apple 播客、iCloud、App Store、哔哩哔哩、夸克和其他中国大陆服务直连：
 
 ```text
 https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Shadowrocket-v2.conf
@@ -47,6 +47,7 @@ V2 中的 ChatGPT Voice IP 来自 OpenAI 官方 `chatgpt-voice.json`。GitHub Ac
 - Apple 地图的已确认主机使用 `DIRECT`，但不会把整个 `ls.apple.com` 放行，避免未来未知的 Siri AI 主机从大陆出口连接。
 - FaceTime、iMessage、Apple 推送和 Apple 的 `17.0.0.0/8` 网络使用 `DIRECT`。配置没有使用 UDP 3478 端口级直连，因为 ChatGPT Voice 也会使用这个端口。
 - Apple TV、App Store、苹果系统更新以及 iCloud 照片和文件内容使用 `DIRECT`，避免大流量下载消耗代理额度。
+- Apple Music 的歌曲、无损音频、资料和苹果 CDN 使用 `DIRECT`；切换中区或美区 Apple ID 不会改变分流结果。QQ 音乐、网易云、酷狗等国内音乐服务继续由国内规则直连。
 - Apple 播客的苹果目录、封面、进度同步、苹果 CDN 和常见第三方节目托管平台使用 `DIRECT`；播客广告规则仍然优先于平台直连规则。
 - 神州租车、雪球、主要中国大陆银行、银联和互联网银行的核心域名放在广告规则之前显式 `DIRECT`；雪球另有专用远程列表补充相关证券和基金域名。
 - 国内 App 开屏广告和常见广告 SDK 使用 AdvertisingLite 远程规则在本机 `REJECT`，并为闲鱼、淘宝固定补充优酷广告、淘宝广告统计和活动弹层域名；不启用 MITM、不安装解密证书。
