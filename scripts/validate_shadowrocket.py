@@ -44,6 +44,7 @@ def active_lines(path: Path) -> list[tuple[int, str]]:
 
 def validate_config() -> None:
     lines = active_lines(CONFIG)
+    active_text = "\n".join(line for _, line in lines)
     if ("[General]" not in [line for _, line in lines]) or ("[Rule]" not in [line for _, line in lines]):
         fail("configuration must contain [General] and [Rule]")
 
@@ -101,9 +102,13 @@ def validate_config() -> None:
         ("DOMAIN-SUFFIX", "apple-relay.cloudflare.com"): "PROXY",
         ("DOMAIN-SUFFIX", "apple-relay.fastly-edge.com"): "PROXY",
         ("DOMAIN-SUFFIX", "cp4.cloudflare.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "siri.apple.com"): "PROXY",
         ("DOMAIN", "mask.icloud.com"): "PROXY",
         ("DOMAIN", "mask-h2.icloud.com"): "PROXY",
         ("DOMAIN", "mask-api.icloud.com"): "PROXY",
+        ("DOMAIN", "mask-api.fe2.apple-dns.net"): "PROXY",
+        ("DOMAIN", "mask.apple-dns.net"): "PROXY",
+        ("DOMAIN", "apple-relay.mask.apple-dns.net"): "PROXY",
         ("DOMAIN", "gspe1-ssl.ls.apple.com"): "PROXY",
         ("DOMAIN-SUFFIX", "maps.apple.com"): "DIRECT",
         ("DOMAIN", "gsp-ssl.ls.apple.com"): "DIRECT",
@@ -113,7 +118,10 @@ def validate_config() -> None:
         ("DOMAIN-SUFFIX", "applemusic.com"): "DIRECT",
         ("DOMAIN-SUFFIX", "musickit.net"): "DIRECT",
         ("DOMAIN-SUFFIX", "tv.apple.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "mzstatic.com"): "DIRECT",
         ("DOMAIN-SUFFIX", "icloud-content.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "gateway.icloud.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "apple-dns.net"): "DIRECT",
         ("DOMAIN-SUFFIX", "zuche.com"): "DIRECT",
         ("DOMAIN-SUFFIX", "xueqiu.com"): "DIRECT",
         ("DOMAIN-SUFFIX", "imedao.com"): "DIRECT",
@@ -139,9 +147,13 @@ def validate_config() -> None:
         "DOMAIN-SUFFIX,leagueoflegends.com,DIRECT",
         "DOMAIN-SUFFIX,lolm.qq.com,DIRECT",
         "DOMAIN-SUFFIX,auth.riotgames.com,PROXY,force-remote-dns",
+        "DOMAIN-SUFFIX,siri.apple.com,PROXY,force-remote-dns",
         "DOMAIN,mask.icloud.com,PROXY,force-remote-dns",
         "DOMAIN,mask-h2.icloud.com,PROXY,force-remote-dns",
         "DOMAIN,mask-api.icloud.com,PROXY,force-remote-dns",
+        "DOMAIN,mask-api.fe2.apple-dns.net,PROXY,force-remote-dns",
+        "DOMAIN,mask.apple-dns.net,PROXY,force-remote-dns",
+        "DOMAIN,apple-relay.mask.apple-dns.net,PROXY,force-remote-dns",
         "DOMAIN,gspe1-ssl.ls.apple.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,maps.apple.com,DIRECT",
         "DOMAIN-SUFFIX,facetime.apple.com,DIRECT",
@@ -162,6 +174,12 @@ def validate_config() -> None:
 
     if "DOMAIN-SUFFIX,ls.apple.com,DIRECT" in config_text:
         fail("broad ls.apple.com direct rule can bypass Apple AI region checks")
+    if "DOMAIN-KEYWORD,siri" in active_text:
+        fail("broad Siri keyword rule can proxy unrelated third-party domains")
+    if "DOMAIN,mask-api.fe.apple-dns.net" in active_text:
+        fail("non-resolving mask-api.fe host must use the current fe2 hostname")
+    if "DOMAIN,mask-t.apple-dns.net" in active_text:
+        fail("non-resolving mask-t host must not be treated as a required route")
     if "DOMAIN-SUFFIX,riotgames.com,PROXY" in config_text:
         fail("broad riotgames.com proxy rule can send mainland game downloads through the proxy")
     if "xpdigital/Apple-Rule" in config_text:
@@ -182,12 +200,17 @@ def validate_config() -> None:
 
 def validate_legacy_config() -> None:
     text = LEGACY_CONFIG.read_text(encoding="utf-8")
+    active_text = "\n".join(line for _, line in active_lines(LEGACY_CONFIG))
     ordered_markers = [
         "DOMAIN-SUFFIX,riotcdn.net,DIRECT",
         "DOMAIN-SUFFIX,leagueoflegends.com,DIRECT",
         "DOMAIN-SUFFIX,lolm.qq.com,DIRECT",
         "DOMAIN-SUFFIX,auth.riotgames.com,PROXY,force-remote-dns",
+        "DOMAIN-SUFFIX,siri.apple.com,PROXY,force-remote-dns",
         "DOMAIN,mask.icloud.com,PROXY,force-remote-dns",
+        "DOMAIN,mask-api.fe2.apple-dns.net,PROXY,force-remote-dns",
+        "DOMAIN,mask.apple-dns.net,PROXY,force-remote-dns",
+        "DOMAIN,apple-relay.mask.apple-dns.net,PROXY,force-remote-dns",
         "DOMAIN,gspe1-ssl.ls.apple.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,maps.apple.com,DIRECT",
         "DOMAIN-SUFFIX,applemusic.com,DIRECT",
@@ -206,6 +229,10 @@ def validate_legacy_config() -> None:
         fail(f"{LEGACY_CONFIG}: Apple AI, Maps and Podcasts rules are in an unsafe order")
     if "xpdigital/Apple-Rule" in text:
         fail(f"{LEGACY_CONFIG}: removed xpdigital repository must not remain referenced")
+    if "DOMAIN-KEYWORD,siri" in active_text:
+        fail(f"{LEGACY_CONFIG}: broad Siri keyword rule must not be used")
+    if "DOMAIN,mask-api.fe.apple-dns.net" in active_text or "DOMAIN,mask-t.apple-dns.net" in active_text:
+        fail(f"{LEGACY_CONFIG}: non-resolving Apple DNS aliases must not be used")
 
 
 def validate_voice_rules() -> None:
