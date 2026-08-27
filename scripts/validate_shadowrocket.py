@@ -12,6 +12,10 @@ CONFIG = Path("Shadowrocket-v2.conf")
 LEGACY_CONFIG = Path("Shadowrocket.conf")
 VOICE_RULES = Path("rules/ChatGPT-Voice.list")
 PODCAST_RULES = Path("Apple-Podcasts-Direct.list")
+WECHAT_RULE_URL = (
+    "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/"
+    "rule/Clash/WeChat/WeChat.list"
+)
 RULE_TYPES = {
     "DOMAIN",
     "DOMAIN-KEYWORD",
@@ -129,6 +133,7 @@ def validate_config() -> None:
         ("DOMAIN-SUFFIX", "unionpay.com"): "DIRECT",
         ("DOMAIN-SUFFIX", "bilibili.com"): "DIRECT",
         ("DOMAIN-SUFFIX", "quark.cn"): "DIRECT",
+        ("RULE-SET", WECHAT_RULE_URL.lower()): "DIRECT",
     }
     for key, policy in required.items():
         if key not in seen or seen[key][1] != policy:
@@ -166,6 +171,7 @@ def validate_config() -> None:
         "DOMAIN-SUFFIX,xueqiu.com,DIRECT",
         "DOMAIN-SUFFIX,icbc.com.cn,DIRECT",
         "RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/AdvertisingLite/AdvertisingLite.list,REJECT",
+        f"RULE-SET,{WECHAT_RULE_URL},DIRECT",
         "RULE-SET,https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Apple-Podcasts-Direct.list,DIRECT",
     ]
     positions = [config_text.index(marker) for marker in ordered_markers]
@@ -186,6 +192,8 @@ def validate_config() -> None:
         fail("removed xpdigital Apple AI repository must not remain referenced")
     if "DEST-PORT,3478,DIRECT" in config_text:
         fail("port-wide UDP 3478 direct rule can bypass ChatGPT Voice proxying")
+    if "rule/Shadowrocket/WeChat/WeChat.list" in config_text:
+        fail("Shadowrocket WeChat list includes broad USER-AGENT routes; use the scoped list")
 
     first_remote_resource = min(
         config_text.index("RULE-SET,https://raw.githubusercontent.com/"),
@@ -219,6 +227,7 @@ def validate_legacy_config() -> None:
         "DOMAIN-SUFFIX,ls.apple.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,apple.com,DIRECT",
         "RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/AdvertisingLite/AdvertisingLite.list,REJECT",
+        f"RULE-SET,{WECHAT_RULE_URL},DIRECT",
         "RULE-SET,https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Apple-Podcasts-Direct.list,DIRECT",
     ]
     try:
@@ -233,6 +242,8 @@ def validate_legacy_config() -> None:
         fail(f"{LEGACY_CONFIG}: broad Siri keyword rule must not be used")
     if "DOMAIN,mask-api.fe.apple-dns.net" in active_text or "DOMAIN,mask-t.apple-dns.net" in active_text:
         fail(f"{LEGACY_CONFIG}: non-resolving Apple DNS aliases must not be used")
+    if "rule/Shadowrocket/WeChat/WeChat.list" in text:
+        fail(f"{LEGACY_CONFIG}: broad WeChat USER-AGENT routes must not be used")
 
 
 def validate_voice_rules() -> None:
