@@ -42,7 +42,7 @@ V2 中的 ChatGPT Voice IP 来自 OpenAI 官方 `chatgpt-voice.json`。GitHub Ac
 - iOS 系统认证网页会话不再旁路 Shadowrocket；`auth.openai.com`、`setup.auth.openai.com`、`auth0.openai.com` 以及当前 Cloudflare 别名均有最优先代理兜底。
 - Claude/Anthropic 的登录、推理、文件、功能开关、连接器与 WebSocket 使用父域名级 `PROXY` 保护，并启用远程 DNS；新增的 Anthropic 子域名也会自动匹配。
 - Gemini、Google 登录及常用图片、视频和资源域名统一使用 `PROXY` 与远程 DNS。
-- OnlyFans 主站及其登录、API、图片和视频子域名统一使用 `PROXY` 与远程 DNS；没有启用范围过大的成人网站分类规则，其他站点仍按现有规则分流。观看图片和视频会正常消耗代理额度。
+- OnlyFans、Fansly、Fanvue、ManyVids、JustForFans、Clips4Sale、主流直播平台和常见海外成人网站使用 `PROXY`；通用清单补充 Pornhub、XVideos、XNXX、XHamster、RedTube、SpankBang 及其常见视频 CDN。广告规则仍然优先，且不会导入混有大量可疑镜像的超大分类表。观看图片和视频会正常消耗代理额度。
 - Riot Mobile（拳头 App）只将国际账号登录、配置、社交和战绩等小流量接口交给 `PROXY`；中国 App Store 的《英雄联盟手游》资源包、腾讯游戏下载域名以及 Riot/LoL 公共静态资源优先 `DIRECT`，不再使用会误伤国服下载的整个 `riotgames.com` 父域名代理。
 - Apple Intelligence 和 Siri 的官方核心域名走 `PROXY`，并以 `*.siri.apple.com` 精确兜底；地区判断主机 `gspe1-ssl.ls.apple.com` 也精确走代理。三个 iCloud Private Relay 主机及当前有效的三个 Apple DNS/Relay 别名固定走代理，但不会代理整个 `icloud.com` 或 `apple-dns.net`。使用相关功能时请在 Shadowrocket 首页选择稳定的美国节点。
 - Apple 地图的已确认主机使用 `DIRECT`，但不会把整个 `ls.apple.com` 放行，避免未来未知的 Siri AI 主机从大陆出口连接。

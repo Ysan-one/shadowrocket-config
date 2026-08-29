@@ -16,6 +16,10 @@ WECHAT_RULE_URL = (
     "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/"
     "rule/Clash/WeChat/WeChat.list"
 )
+ADULT_RULE_URL = (
+    "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/"
+    "Clash/Ruleset/Porn.list"
+)
 RULE_TYPES = {
     "DOMAIN",
     "DOMAIN-KEYWORD",
@@ -88,6 +92,20 @@ def validate_config() -> None:
         ("DOMAIN-SUFFIX", "claude.ai"): "PROXY",
         ("DOMAIN-SUFFIX", "google.com"): "PROXY",
         ("DOMAIN-SUFFIX", "onlyfans.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "fansly.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "fanvue.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "manyvids.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "justfor.fans"): "PROXY",
+        ("DOMAIN-SUFFIX", "clips4sale.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "cam4.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "stripchat.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "myfreecams.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "e-hentai.org"): "PROXY",
+        ("DOMAIN-SUFFIX", "exhentai.org"): "PROXY",
+        ("DOMAIN-SUFFIX", "jable.tv"): "PROXY",
+        ("DOMAIN-SUFFIX", "javdb.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "javbus.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "netflav.com"): "PROXY",
         ("DOMAIN-SUFFIX", "riotcdn.net"): "DIRECT",
         ("DOMAIN-SUFFIX", "pvp.net"): "PROXY",
         ("DOMAIN-SUFFIX", "rgpub.io"): "DIRECT",
@@ -135,6 +153,7 @@ def validate_config() -> None:
         ("DOMAIN-SUFFIX", "bilibili.com"): "DIRECT",
         ("DOMAIN-SUFFIX", "quark.cn"): "DIRECT",
         ("RULE-SET", WECHAT_RULE_URL.lower()): "DIRECT",
+        ("RULE-SET", ADULT_RULE_URL.lower()): "PROXY",
     }
     for key, policy in required.items():
         if key not in seen or seen[key][1] != policy:
@@ -149,7 +168,6 @@ def validate_config() -> None:
     ordered_markers = [
         "DOMAIN,raw.githubusercontent.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,githubusercontent.com,PROXY,force-remote-dns",
-        "DOMAIN-SUFFIX,onlyfans.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,riotcdn.net,DIRECT",
         "DOMAIN-SUFFIX,leagueoflegends.com,DIRECT",
         "DOMAIN-SUFFIX,lolm.qq.com,DIRECT",
@@ -174,6 +192,9 @@ def validate_config() -> None:
         "DOMAIN-SUFFIX,icbc.com.cn,DIRECT",
         "RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/AdvertisingLite/AdvertisingLite.list,REJECT",
         f"RULE-SET,{WECHAT_RULE_URL},DIRECT",
+        "DOMAIN-SUFFIX,onlyfans.com,PROXY,force-remote-dns",
+        "DOMAIN-SUFFIX,fansly.com,PROXY,force-remote-dns",
+        f"RULE-SET,{ADULT_RULE_URL},PROXY",
         "RULE-SET,https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Apple-Podcasts-Direct.list,DIRECT",
     ]
     positions = [config_text.index(marker) for marker in ordered_markers]
@@ -212,7 +233,6 @@ def validate_legacy_config() -> None:
     text = LEGACY_CONFIG.read_text(encoding="utf-8")
     active_text = "\n".join(line for _, line in active_lines(LEGACY_CONFIG))
     ordered_markers = [
-        "DOMAIN-SUFFIX,onlyfans.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,riotcdn.net,DIRECT",
         "DOMAIN-SUFFIX,leagueoflegends.com,DIRECT",
         "DOMAIN-SUFFIX,lolm.qq.com,DIRECT",
@@ -231,6 +251,9 @@ def validate_legacy_config() -> None:
         "DOMAIN-SUFFIX,apple.com,DIRECT",
         "RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/AdvertisingLite/AdvertisingLite.list,REJECT",
         f"RULE-SET,{WECHAT_RULE_URL},DIRECT",
+        "DOMAIN-SUFFIX,onlyfans.com,PROXY,force-remote-dns",
+        "DOMAIN-SUFFIX,fansly.com,PROXY,force-remote-dns",
+        f"RULE-SET,{ADULT_RULE_URL},PROXY",
         "RULE-SET,https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Apple-Podcasts-Direct.list,DIRECT",
     ]
     try:
