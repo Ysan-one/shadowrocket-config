@@ -87,6 +87,7 @@ def validate_config() -> None:
         ("DOMAIN-SUFFIX", "openai.com"): "PROXY",
         ("DOMAIN-SUFFIX", "claude.ai"): "PROXY",
         ("DOMAIN-SUFFIX", "google.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "onlyfans.com"): "PROXY",
         ("DOMAIN-SUFFIX", "riotcdn.net"): "DIRECT",
         ("DOMAIN-SUFFIX", "pvp.net"): "PROXY",
         ("DOMAIN-SUFFIX", "rgpub.io"): "DIRECT",
@@ -148,6 +149,7 @@ def validate_config() -> None:
     ordered_markers = [
         "DOMAIN,raw.githubusercontent.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,githubusercontent.com,PROXY,force-remote-dns",
+        "DOMAIN-SUFFIX,onlyfans.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,riotcdn.net,DIRECT",
         "DOMAIN-SUFFIX,leagueoflegends.com,DIRECT",
         "DOMAIN-SUFFIX,lolm.qq.com,DIRECT",
@@ -210,6 +212,7 @@ def validate_legacy_config() -> None:
     text = LEGACY_CONFIG.read_text(encoding="utf-8")
     active_text = "\n".join(line for _, line in active_lines(LEGACY_CONFIG))
     ordered_markers = [
+        "DOMAIN-SUFFIX,onlyfans.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,riotcdn.net,DIRECT",
         "DOMAIN-SUFFIX,leagueoflegends.com,DIRECT",
         "DOMAIN-SUFFIX,lolm.qq.com,DIRECT",
