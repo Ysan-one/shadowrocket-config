@@ -91,6 +91,15 @@ def validate_config() -> None:
         ("DOMAIN-SUFFIX", "openai.com"): "PROXY",
         ("DOMAIN-SUFFIX", "claude.ai"): "PROXY",
         ("DOMAIN-SUFFIX", "google.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "cm.steampowered.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "steamchina.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "steamcontent.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "steamserver.net"): "DIRECT",
+        ("DOMAIN-SUFFIX", "steamusercontent.com"): "DIRECT",
+        ("DOMAIN-SUFFIX", "steampowered.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "steamcommunity.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "steam-chat.com"): "PROXY",
+        ("DOMAIN-SUFFIX", "steamstatic.com"): "PROXY",
         ("DOMAIN-SUFFIX", "onlyfans.com"): "PROXY",
         ("DOMAIN-SUFFIX", "fansly.com"): "PROXY",
         ("DOMAIN-SUFFIX", "fanvue.com"): "PROXY",
@@ -168,6 +177,8 @@ def validate_config() -> None:
     ordered_markers = [
         "DOMAIN,raw.githubusercontent.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,githubusercontent.com,PROXY,force-remote-dns",
+        "DOMAIN-SUFFIX,steamcontent.com,DIRECT",
+        "DOMAIN-SUFFIX,steampowered.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,riotcdn.net,DIRECT",
         "DOMAIN-SUFFIX,leagueoflegends.com,DIRECT",
         "DOMAIN-SUFFIX,lolm.qq.com,DIRECT",
@@ -233,6 +244,8 @@ def validate_legacy_config() -> None:
     text = LEGACY_CONFIG.read_text(encoding="utf-8")
     active_text = "\n".join(line for _, line in active_lines(LEGACY_CONFIG))
     ordered_markers = [
+        "DOMAIN-SUFFIX,steamcontent.com,DIRECT",
+        "DOMAIN-SUFFIX,steampowered.com,PROXY,force-remote-dns",
         "DOMAIN-SUFFIX,riotcdn.net,DIRECT",
         "DOMAIN-SUFFIX,leagueoflegends.com,DIRECT",
         "DOMAIN-SUFFIX,lolm.qq.com,DIRECT",
