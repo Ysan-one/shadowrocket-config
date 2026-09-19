@@ -4,15 +4,7 @@
 
 ## 配置地址
 
-### 稳定版
-
-稳定版保留原来的大型静态规则，已经在现有设备上验证可用：
-
-```text
-https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Shadowrocket.conf
-```
-
-### V2 测试版（推荐先在一台 iPhone 上使用）
+当前仅维护 V2，作为正式使用的配置：
 
 V2 使用分层结构和持续维护的远程规则，补齐 ChatGPT Voice、TikTok、Telegram、Notion、1Password 等容易被旧名单漏掉的流量，同时继续让 Apple 地图、FaceTime、iMessage、Apple Music、Apple TV、Apple 播客、iCloud、App Store、哔哩哔哩、夸克和其他中国大陆服务直连：
 
@@ -20,7 +12,7 @@ V2 使用分层结构和持续维护的远程规则，补齐 ChatGPT Voice、Tik
 https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Shadowrocket-v2.conf
 ```
 
-V2 不会覆盖稳定版，两份配置可以同时保存在 Shadowrocket 中。建议先在一台 iPhone 上试用两到三天，再让 iPad 和 Apple Vision Pro 切换。
+已在使用 V2 的设备继续使用上述地址，按原方式更新即可。
 
 ## 在设备中安装 V2
 
@@ -35,7 +27,7 @@ V2 中的 ChatGPT Voice IP 来自 OpenAI 官方 `chatgpt-voice.json`。GitHub Ac
 
 ## 快捷指令获取 LifeCal 日历图片
 
-稳定版和 V2 均为 `lifecal-virid.vercel.app` 配置了精确的 `PROXY` 与远程 DNS 规则，优先于广告和通用分流规则。仅匹配这个站点；`/days` 路径及图片尺寸参数保留在快捷指令的 URL 中。
+V2 为 `lifecal-virid.vercel.app` 配置了精确的 `PROXY` 与远程 DNS 规则，优先于广告和通用分流规则。仅匹配这个站点；`/days` 路径及图片尺寸参数保留在快捷指令的 URL 中。
 
 1. 在 Shadowrocket 的“配置”中更新当前使用的远程配置，并确认已启用；“全局路由”选择“配置”，保持代理连接。
 2. 在“快捷指令”中新建指令，添加“URL”操作，填入以下地址：
@@ -72,7 +64,7 @@ V2 中的 ChatGPT Voice IP 来自 OpenAI 官方 `chatgpt-voice.json`。GitHub Ac
 - 未匹配的站点最终使用 `DIRECT`。
 - 百度、哔哩哔哩、高德、淘宝、微信、京东、国内视频、夸克等常用国内服务设置了显式 `DIRECT` 保护。
 
-V2 还将本地 DNS 换成阿里和腾讯的加密 DoH，并补充局域网 IPv6 绕过；它只保留一份 AdvertisingLite 广告规则，不再重复加载旧配置中的 16,000 余条静态广告名单。通用中国大陆规则放在通用海外代理规则之前，最终仍然使用 `FINAL,DIRECT` 控制代理流量成本。
+V2 使用阿里和腾讯的加密 DoH 作为本地 DNS，并提供局域网 IPv6 绕过；广告过滤使用一份 AdvertisingLite 远程规则。通用中国大陆规则放在通用海外代理规则之前，最终使用 `FINAL,DIRECT` 控制代理流量成本。
 
 原先引用的 `xpdigital/Apple-Rule` 仓库已无法访问。它最后公开的 Apple AI 精简规则所包含的 `guzzoni.apple.com`、`*.smoot.apple.com`、三个 Apple Relay 主机、`cp4.cloudflare.com` 和 `gspe1-ssl.ls.apple.com` 已全部固化在本配置中，因此移除了会返回 404 的远程依赖。V2 另外补入本机实际出现的 `api-siri-prod.apple.com`、`ropes.apple.com` 和 `*.apple-carry-relay.cloudflare.com`，并以 `*.siri.apple.com` 精确兜底。三个指定的 iCloud Private Relay 主机及当前可解析的 `mask-api.fe2.apple-dns.net`、`mask.apple-dns.net`、`apple-relay.mask.apple-dns.net` 也走代理；不会使用范围过大的 `DOMAIN-KEYWORD,siri`，也不会加入当前无法通过公共 DNS 解析的 `mask-api.fe.apple-dns.net` 和 `mask-t.apple-dns.net`。已确认的 Apple 地图主机以及 Apple TV、FaceTime、iMessage、Apple 播客、App Store、系统更新和 iCloud 大流量域名继续优先直连。未识别的 `*.ls.apple.com` 仍保守走代理，以兼顾新版 Siri AI。
 

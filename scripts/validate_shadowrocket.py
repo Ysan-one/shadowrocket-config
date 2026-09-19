@@ -9,7 +9,6 @@ import sys
 
 
 CONFIG = Path("Shadowrocket-v2.conf")
-LEGACY_CONFIG = Path("Shadowrocket.conf")
 VOICE_RULES = Path("rules/ChatGPT-Voice.list")
 PODCAST_RULES = Path("Apple-Podcasts-Direct.list")
 WECHAT_RULE_URL = (
@@ -246,51 +245,6 @@ def validate_config() -> None:
         fail("GitHub Raw proxy rule must precede all remote rule resources")
 
 
-def validate_legacy_config() -> None:
-    text = LEGACY_CONFIG.read_text(encoding="utf-8")
-    active_text = "\n".join(line for _, line in active_lines(LEGACY_CONFIG))
-    ordered_markers = [
-        "DOMAIN-SUFFIX,steamcontent.com,DIRECT",
-        "DOMAIN-SUFFIX,steampowered.com,PROXY,force-remote-dns",
-        "DOMAIN-SUFFIX,riotcdn.net,DIRECT",
-        "DOMAIN-SUFFIX,leagueoflegends.com,DIRECT",
-        "DOMAIN-SUFFIX,lolm.qq.com,DIRECT",
-        "DOMAIN-SUFFIX,auth.riotgames.com,PROXY,force-remote-dns",
-        "DOMAIN-SUFFIX,siri.apple.com,PROXY,force-remote-dns",
-        "DOMAIN,mask.icloud.com,PROXY,force-remote-dns",
-        "DOMAIN,mask-api.fe2.apple-dns.net,PROXY,force-remote-dns",
-        "DOMAIN,mask.apple-dns.net,PROXY,force-remote-dns",
-        "DOMAIN,apple-relay.mask.apple-dns.net,PROXY,force-remote-dns",
-        "DOMAIN,gspe1-ssl.ls.apple.com,PROXY,force-remote-dns",
-        "DOMAIN-SUFFIX,maps.apple.com,DIRECT",
-        "DOMAIN-SUFFIX,applemusic.com,DIRECT",
-        "DOMAIN-SUFFIX,musickit.net,DIRECT",
-        "DOMAIN-SUFFIX,gateway.icloud.com,DIRECT",
-        "DOMAIN-SUFFIX,ls.apple.com,PROXY,force-remote-dns",
-        "DOMAIN-SUFFIX,apple.com,DIRECT",
-        "RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Shadowrocket/AdvertisingLite/AdvertisingLite.list,REJECT",
-        f"RULE-SET,{WECHAT_RULE_URL},DIRECT",
-        "DOMAIN-SUFFIX,onlyfans.com,PROXY,force-remote-dns",
-        "DOMAIN-SUFFIX,fansly.com,PROXY,force-remote-dns",
-        f"RULE-SET,{ADULT_RULE_URL},PROXY",
-        "RULE-SET,https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/Apple-Podcasts-Direct.list,DIRECT",
-    ]
-    try:
-        positions = [text.index(marker) for marker in ordered_markers]
-    except ValueError as error:
-        fail(f"{LEGACY_CONFIG}: missing protected Apple route: {error}")
-    if positions != sorted(positions):
-        fail(f"{LEGACY_CONFIG}: Apple AI, Maps and Podcasts rules are in an unsafe order")
-    if "xpdigital/Apple-Rule" in text:
-        fail(f"{LEGACY_CONFIG}: removed xpdigital repository must not remain referenced")
-    if "DOMAIN-KEYWORD,siri" in active_text:
-        fail(f"{LEGACY_CONFIG}: broad Siri keyword rule must not be used")
-    if "DOMAIN,mask-api.fe.apple-dns.net" in active_text or "DOMAIN,mask-t.apple-dns.net" in active_text:
-        fail(f"{LEGACY_CONFIG}: non-resolving Apple DNS aliases must not be used")
-    if "rule/Shadowrocket/WeChat/WeChat.list" in text:
-        fail(f"{LEGACY_CONFIG}: broad WeChat USER-AGENT routes must not be used")
-
-
 def validate_voice_rules() -> None:
     networks = []
     for number, line in active_lines(VOICE_RULES):
@@ -341,7 +295,6 @@ def validate_podcast_rules() -> None:
 
 def main() -> None:
     validate_config()
-    validate_legacy_config()
     validate_voice_rules()
     validate_podcast_rules()
     print("Shadowrocket V2 validation passed")
