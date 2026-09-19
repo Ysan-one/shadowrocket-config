@@ -33,6 +33,22 @@ V2 不会覆盖稳定版，两份配置可以同时保存在 Shadowrocket 中。
 
 V2 中的 ChatGPT Voice IP 来自 OpenAI 官方 `chatgpt-voice.json`。GitHub Actions 每天检查一次；只有官方 IP 发生变化时才会更新 `rules/ChatGPT-Voice.list`。语音优先使用 UDP 3478，代理节点需要支持 UDP 才能获得更好的通话质量。
 
+## 快捷指令获取 LifeCal 日历图片
+
+稳定版和 V2 均为 `lifecal-virid.vercel.app` 配置了精确的 `PROXY` 与远程 DNS 规则，优先于广告和通用分流规则。仅匹配这个站点；`/days` 路径及图片尺寸参数保留在快捷指令的 URL 中。
+
+1. 在 Shadowrocket 的“配置”中更新当前使用的远程配置，并确认已启用；“全局路由”选择“配置”，保持代理连接。
+2. 在“快捷指令”中新建指令，添加“URL”操作，填入以下地址：
+
+   ```text
+   https://lifecal-virid.vercel.app/days?height=2796&width=1290
+   ```
+
+3. 添加“获取 URL 内容”操作，方法选择 `GET`。
+4. 添加“快速查看”来预览图片，或添加“存储到相簿”来保存图片。
+
+该接口直接返回 PNG 图片。分流规则决定网络出口，实际获取速度取决于所选节点和图片服务的响应时间。
+
 ## 使用原则
 
 - 广告和跟踪域名继续使用 `REJECT`。
