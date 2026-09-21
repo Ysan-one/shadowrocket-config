@@ -47,9 +47,11 @@ V2 显式覆盖 Muse、Meta AI、Meta 账号、Facebook、Instagram、Threads、
 
 2026-09-21 根据 [Meta 官方 Muse 公告](https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/)和 [Muse 官网](https://muse.ai/)公开页面的 CSP、前端脚本核对，补入 `muse.ai`、`meta.ai`、`metaaiusercontent.com`、`ecto1usercontent.com`、仍被引用的 Hatch 兼容入口，以及 Meta 专用的 Fastly / Cloudflare 隐私中继主机。共享 CDN 仅匹配 Meta 专用主机。
 
+Muse 的手机 App 和网页会[直接连接个人云端虚拟机](https://research.meta.ai/blog/security-and-safety-for-ai-agents-our-approach-with-muse)。官方前端用 `FEATHER_VM_HOST_SUFFIX` 指定 `.metaaivm.com`，每个用户的虚拟机使用不同的 UUID 子域名。因此 `metaaivm.com` 及其全部子域名也必须走 `PROXY` 与远程 DNS；仅代理官网和登录域名，仍可能出现首页能打开、内部功能一直加载的问题。
+
 在 Shadowrocket 中更新并重新使用 `Shadowrocket-v2.conf`，将“全局路由”设为“配置”，继续选择此前全局代理下能正常使用 Muse 的节点，然后完全退出并重新打开 Muse。
 
-如果仍有个别功能失败，可在 Shadowrocket 请求记录中检查 `muse.ai`、`api.muse.ai`、`agent.meta.ai` 和 `auth.meta.com` 是否命中 `PROXY`，再根据失败请求补充域名。这些规则已通过配置检查，登录后的完整 App 流程仍需在实际设备上确认。
+如果仍有个别功能失败，可在 Shadowrocket 请求记录中优先检查 `*.metaaivm.com`，以及 `muse.ai`、`api.muse.ai`、`agent.meta.ai` 和 `auth.meta.com` 是否命中 `PROXY`，再根据失败请求补充域名。这些规则已通过配置检查，登录后的完整 App 流程仍需在实际设备上确认。
 
 ## 使用原则
 
