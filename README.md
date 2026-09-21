@@ -41,6 +41,16 @@ V2 为 `lifecal-virid.vercel.app` 配置了精确的 `PROXY` 与远程 DNS 规�
 
 该接口直接返回 PNG 图片。分流规则决定网络出口，实际获取速度取决于所选节点和图片服务的响应时间。
 
+## Muse / Meta AI 使用配置分流
+
+V2 显式覆盖 Muse、Meta AI、Meta 账号、Facebook、Instagram、Threads、Messenger、WhatsApp，以及它们的主要图片、视频和文件资源域名，统一使用 `PROXY` 与远程 DNS，优先于广告和通用分流规则。
+
+2026-09-21 根据 [Meta 官方 Muse 公告](https://about.fb.com/news/2026/09/introducing-muse-personal-ai-agent/)和 [Muse 官网](https://muse.ai/)公开页面的 CSP、前端脚本核对，补入 `muse.ai`、`meta.ai`、`metaaiusercontent.com`、`ecto1usercontent.com`、仍被引用的 Hatch 兼容入口，以及 Meta 专用的 Fastly / Cloudflare 隐私中继主机。共享 CDN 仅匹配 Meta 专用主机。
+
+在 Shadowrocket 中更新并重新使用 `Shadowrocket-v2.conf`，将“全局路由”设为“配置”，继续选择此前全局代理下能正常使用 Muse 的节点，然后完全退出并重新打开 Muse。
+
+如果仍有个别功能失败，可在 Shadowrocket 请求记录中检查 `muse.ai`、`api.muse.ai`、`agent.meta.ai` 和 `auth.meta.com` 是否命中 `PROXY`，再根据失败请求补充域名。这些规则已通过配置检查，登录后的完整 App 流程仍需在实际设备上确认。
+
 ## 使用原则
 
 - 广告和跟踪域名继续使用 `REJECT`。
