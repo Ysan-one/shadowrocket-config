@@ -49,6 +49,8 @@ V2 显式覆盖 Muse、Meta AI、Meta 账号、Facebook、Instagram、Threads、
 
 Muse 的手机 App 和网页会[直接连接个人云端虚拟机](https://research.meta.ai/blog/security-and-safety-for-ai-agents-our-approach-with-muse)。官方前端用 `FEATHER_VM_HOST_SUFFIX` 指定 `.metaaivm.com`，每个用户的虚拟机使用不同的 UUID 子域名。因此 `metaaivm.com` 及其全部子域名也必须走 `PROXY` 与远程 DNS；仅代理官网和登录域名，仍可能出现首页能打开、内部功能一直加载的问题。
 
+内容与嵌入页面另覆盖 Meta 的 `meta-agents-apps.workers.dev` 账户、Facebook 内容兼容域名和视频短链、Instagram 私信短链，以及页面声明的 GIF、Stripe / Link、验证码和生产身份/支付认证依赖。核查依据、通用名单兜底与实际日志的区别，见[域名核查记录](docs/meta-routing-audit.md)。
+
 在 Shadowrocket 中更新并重新使用 `Shadowrocket-v2.conf`，将“全局路由”设为“配置”，继续选择此前全局代理下能正常使用 Muse 的节点，然后完全退出并重新打开 Muse。
 
 如果仍有个别功能失败，可在 Shadowrocket 请求记录中优先检查 `*.metaaivm.com`，以及 `muse.ai`、`api.muse.ai`、`agent.meta.ai` 和 `auth.meta.com` 是否命中 `PROXY`，再根据失败请求补充域名。这些规则已通过配置检查，登录后的完整 App 流程仍需在实际设备上确认。
