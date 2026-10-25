@@ -59,6 +59,7 @@ Muse 的手机 App 和网页会[直接连接个人云端虚拟机](https://resea
 
 - 广告和跟踪域名继续使用 `REJECT`。
 - GFW 黑名单中的站点使用 `PROXY`。
+- RevenueCat 的 `api.revenuecat.com` 和官方备用接口 `api.rc-backup.com` 在广告规则之前使用 `PROXY` 与远程 DNS，改善会员状态、购买验证和恢复购买的连接可靠性；仅匹配这两个接口，不改变 App Store 下载或 iCloud 同步的分流。
 - ChatGPT/OpenAI 的登录、接口、静态资源、WebSocket、iOS 设备校验和 Google 登录链路统一使用 `PROXY` 与远程 DNS，避免规则模式下混用大陆直连 IP 和代理 IP。
 - GitHub 云端配置和远程规则使用的 `raw.githubusercontent.com`、`*.githubusercontent.com` 精确走 `PROXY`，避免大陆直连 GitHub Raw 时更新偶发失败；普通 GitHub 网站不会因此全部消耗代理流量。
 - iOS 系统认证网页会话不再旁路 Shadowrocket；`auth.openai.com`、`setup.auth.openai.com`、`auth0.openai.com` 以及当前 Cloudflare 别名均有最优先代理兜底。
