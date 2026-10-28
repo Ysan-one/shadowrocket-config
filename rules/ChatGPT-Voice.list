@@ -1,8 +1,8 @@
 # NAME: ChatGPT Voice
 # SOURCE: https://openai.com/chatgpt-voice.json
-# SOURCE-CREATION-TIME: 2026-10-27T21:26:47.742042+00:00
+# SOURCE-CREATION-TIME: 2026-10-27T22:28:21.782457+00:00
 # MANAGED-BY: scripts/update_chatgpt_voice.py
-# TOTAL: 400
+# TOTAL: 402
 IP-CIDR,4.150.48.254/32,no-resolve
 IP-CIDR,4.151.50.34/32,no-resolve
 IP-CIDR,4.151.125.58/32,no-resolve
@@ -275,6 +275,7 @@ IP-CIDR,57.154.55.99/32,no-resolve
 IP-CIDR,57.154.67.255/32,no-resolve
 IP-CIDR,64.236.175.115/32,no-resolve
 IP-CIDR,68.155.152.41/32,no-resolve
+IP-CIDR,68.221.76.47/32,no-resolve
 IP-CIDR,68.221.176.216/32,no-resolve
 IP-CIDR,68.221.200.92/32,no-resolve
 IP-CIDR,70.153.83.155/32,no-resolve
@@ -355,6 +356,7 @@ IP-CIDR,138.91.23.93/32,no-resolve
 IP-CIDR,158.158.35.12/32,no-resolve
 IP-CIDR,158.158.43.147/32,no-resolve
 IP-CIDR,158.158.47.203/32,no-resolve
+IP-CIDR,158.158.54.76/32,no-resolve
 IP-CIDR,158.158.72.151/32,no-resolve
 IP-CIDR,158.158.96.28/32,no-resolve
 IP-CIDR,158.158.98.53/32,no-resolve
