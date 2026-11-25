@@ -10,6 +10,7 @@ import sys
 
 CONFIG = Path("Shadowrocket-v2.conf")
 VOICE_RULES = Path("rules/ChatGPT-Voice.list")
+VOICE_RULE_URL = "https://raw.githubusercontent.com/Ysan-one/shadowrocket-config/main/rules/ChatGPT-Voice.list"
 PODCAST_RULES = Path("Apple-Podcasts-Direct.list")
 WECHAT_RULE_URL = (
     "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/"
@@ -49,6 +50,39 @@ def active_lines(path: Path) -> list[tuple[int, str]]:
     ]
 
 
+def validate_claude_mobile_paths(rules: list[tuple[int, str]]) -> None:
+    # Check the first matching hostname rule for each hop, not just the presence of a rule.
+    pending = {
+        "claude.ai", "platform.claude.com", "a-api.anthropic.com", "a-cdn.anthropic.com",
+        "mcp-proxy.anthropic.com", "example.frame.claudeusercontent.com",
+        "example.claudemcpcontent.com", "accounts.google.com", "oauth2.googleapis.com",
+        "challenges.cloudflare.com", "claude.new", "www.claude.new", "claude.app",
+        "clau.de", "claude.site",
+    }
+    for number, line in rules:
+        kind, value, *options = (part.strip() for part in line.split(","))
+        # The voice list is validated below as no-resolve IP ranges, not hostnames.
+        if kind == "RULE-SET" and value == VOICE_RULE_URL and options == ["PROXY"]:
+            continue
+        if kind not in {"DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD"}:
+            break  # Don't guess whether an opaque list or IP rule would match.
+        value = value.lower()
+        matched = {
+            host for host in pending
+            if host == value
+            or (kind == "DOMAIN-SUFFIX" and host.endswith("." + value))
+            or (kind == "DOMAIN-KEYWORD" and value in host)
+        }
+        if matched and (
+            kind == "DOMAIN-KEYWORD" or options[0] != "PROXY" or "force-remote-dns" not in options[1:]
+        ):
+            fail(f"{CONFIG}:{number}: unsafe first Claude route for {', '.join(sorted(matched))}")
+        pending -= matched
+        if not pending:
+            return
+    fail(f"Claude hosts without an early proxy route and remote DNS: {', '.join(sorted(pending))}")
+
+
 def validate_config() -> None:
     lines = active_lines(CONFIG)
     active_text = "\n".join(line for _, line in lines)
@@ -83,6 +117,8 @@ def validate_config() -> None:
                 f"({previous_policy} then {fields[2]})"
             )
         seen[key] = (number, fields[2])
+
+    validate_claude_mobile_paths(rules)
 
     required = {
         ("DOMAIN", "raw.githubusercontent.com"): "PROXY",
@@ -171,7 +207,7 @@ def validate_config() -> None:
             fail(f"missing required route: {key[0]},{key[1]},{policy}")
 
     config_text = CONFIG.read_text(encoding="utf-8")
-    if "main/rules/ChatGPT-Voice.list,PROXY" not in config_text:
+    if f"RULE-SET,{VOICE_RULE_URL},PROXY" not in active_text.splitlines():
         fail("ChatGPT Voice rule set is not routed through PROXY")
     if "main/Shadowrocket-v2.conf" not in config_text:
         fail("V2 update-url is missing")

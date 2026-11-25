@@ -63,7 +63,8 @@ Muse 的手机 App 和网页会[直接连接个人云端虚拟机](https://resea
 - ChatGPT/OpenAI 的登录、接口、静态资源、WebSocket、iOS 设备校验和 Google 登录链路统一使用 `PROXY` 与远程 DNS，避免规则模式下混用大陆直连 IP 和代理 IP。
 - GitHub 云端配置和远程规则使用的 `raw.githubusercontent.com`、`*.githubusercontent.com` 精确走 `PROXY`，避免大陆直连 GitHub Raw 时更新偶发失败；普通 GitHub 网站不会因此全部消耗代理流量。
 - iOS 系统认证网页会话不再旁路 Shadowrocket；`auth.openai.com`、`setup.auth.openai.com`、`auth0.openai.com` 以及当前 Cloudflare 别名均有最优先代理兜底。
-- Claude/Anthropic 的登录、推理、文件、功能开关、连接器与 WebSocket 使用父域名级 `PROXY` 保护，并启用远程 DNS；新增的 Anthropic 子域名也会自动匹配。
+- Claude 登录、聊天和文件使用的 `claude.ai`、`claude.com`、`anthropic.com`、`claudeusercontent.com`，以及[交互卡片](https://claude.com/docs/connectors/building/mcp-apps/getting-started)使用的独立域名 `claudemcpcontent.com`，都按父域名优先走 `PROXY` 与远程 DNS，包含其未来新增的子域名。[iPhone / iPad 也支持对话内的交互卡片](https://support.claude.com/en/articles/13454812-use-interactive-connectors-in-claude)。
+- Claude 链接的第一跳也按主机名精确代理：`claude.new`、`www.claude.new`、`claude.app`、`clau.de`，以及仍能跳转到 `claude.ai/public/artifacts/…` 的旧作品链接 `claude.site/artifacts/…`。这些是网页入口，不代表每次启动 App 都会访问。第三方网站、新的独立域名和仅有 IP 的连接不会因名称相似自动走 Claude 规则；本次没有改变公共 CDN、Apple 服务或国内下载的分流。
 - Gemini、Google 登录及常用图片、视频和资源域名统一使用 `PROXY` 与远程 DNS。
 - Steam 商店、登录、社区、聊天和网页静态资源使用 `PROXY` 与远程 DNS；游戏下载、客户端更新、直播/预告片媒体、用户图片及中国大陆内容节点优先 `DIRECT`，避免大型游戏和视频占用代理额度。游戏服务器流量未做整段代理，继续由直连兜底以降低延迟。
 - Riot Mobile（拳头 App）只将国际账号登录、配置、社交和战绩等小流量接口交给 `PROXY`；中国 App Store 的《英雄联盟手游》资源包、腾讯游戏下载域名以及 Riot/LoL 公共静态资源优先 `DIRECT`，不再使用会误伤国服下载的整个 `riotgames.com` 父域名代理。
